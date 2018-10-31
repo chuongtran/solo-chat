@@ -9,6 +9,10 @@ body,
   padding: 0;
 }
 
+body * {
+  box-sizing: border-box;
+}
+
 .app {
   display: flex;
   flex-direction: column;
@@ -16,9 +20,18 @@ body,
 
 .chatArea {
   flex-grow: 1;
+  flex: 1;
+  overflow: auto;
   margin: 10px;
   border: 1px solid #ccc;
   background-color: #fafafa;
+}
+.chatArea > p {
+  padding: 12px;
+  margin: 0;
+}
+.chatArea > p:nth-of-type(even) {
+  background: #eee;
 }
 
 .messageBar {
