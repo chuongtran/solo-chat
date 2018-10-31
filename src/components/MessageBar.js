@@ -42,8 +42,10 @@ class MessageBar extends Component {
   onSubmit = (evt) => {
     evt.preventDefault();
     const { onSubmit } = this.props;
-    onSubmit(this.state.message);
-    this.setState({ message: '', commandOpened: false });
+    var result = onSubmit(this.state.message);
+    if (result) {
+      this.setState({ message: '', commandOpened: false });
+    }
   }
 
   onCommandSelect = (command) => {

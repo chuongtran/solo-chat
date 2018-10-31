@@ -5,11 +5,18 @@ import axios from 'axios';
 import { commands } from './constants';
 import MessageBar from "./components/MessageBar";
 import ChatArea from "./components/ChatArea";
+import ErrorMessage from "./components/ErrorMessage";
 import "./App.css";
 import { IDGenerator } from './utils';
 import { addMessage, updateMessage, stopApplication } from './actions';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      errorMessage: ''
+    }
+  }
   searchForCharacter = (messageId, query) => {
     axios.get(`https://swapi.co/api/people/?search=${query}`).then(data => {
       if(data) {
@@ -40,8 +47,14 @@ class App extends Component {
             messageResults = `Current time: ${new Date().toString()}`;
             break;
           case 'starwars':
-            this.searchForCharacter(id, messageArray.join(' '));
-            messageResults = `Searching character by name: ${messageArray.join(' ')}`;
+            const query = messageArray.join(' ');
+            if (!query.replace(/ /g,'')) {
+              messageResults = null;
+              this.setState({ errorMessage: 'Please enter a query' });
+              break;
+            }
+            this.searchForCharacter(id, query);
+            messageResults = `Searching character by name: ${query}`;
             break;
           case 'goodbye':
             this.props.stopApplication();
@@ -63,16 +76,21 @@ class App extends Component {
     return { id, content: messageResults };
   }
   onSubmit = (message) => {
+    this.setState({ errorMessage: '' });
     const finalMessage = this.messageConverter(message);
     if (finalMessage) {
       this.props.addMessage(finalMessage);
+      return true;
     }
+    return false;
+
   }
   render() {
     return (
       <div className="app">
         <ChatArea onSubmit={this.onSubmit} />
         <MessageBar onSubmit={this.onSubmit} />
+        <ErrorMessage message={this.state.errorMessage} />
       </div>
     );
   }
